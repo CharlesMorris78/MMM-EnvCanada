@@ -57,6 +57,5 @@ Here's an example of a basic config for the module. See full list of available s
 | `textForecasts` | The number of text forecasts to display. Environment Canada provides two forecasts for each day: today and tonight. If set to 0, no text forecast is disdplayed.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `2`</li><li>**Possible values:** `0` to `5`</li></ul> |
 | `updateInterval` | The duration of time between each attempt to refresh the forecast information, in miliseconds.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10 * 60 * 1000` which is 10 minutes</li></ul> |
 
-# Support
+## Support
 This is my first MagicMirror module. There probably are better ways to do some of the things I have implemented, but this represents what I have learned so far, with thanks to the authors of the envcanada provider code for the default weather module. I will respond to questions and suggestions as promptly as possible.
-#
