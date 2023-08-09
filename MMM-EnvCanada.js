@@ -76,7 +76,6 @@ Module.register("MMM-EnvCanada", {
 		performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
 		.then((data) => {
 			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
-			var firstEntry = forecastArray[0].querySelector("period").getAttribute("textForecastName");
 			forecast = "";
 			for (let i = 0; i < this.config.textForecasts; i += 1) {
 				forecast += "<b>" + forecastArray[i].querySelector("period").getAttribute("textForecastName") + ":</b> ";
@@ -95,14 +94,15 @@ Module.register("MMM-EnvCanada", {
 			}
 			
 			if (this.config.showForecastDays > 2) {
-				var forecastObj = new ForecastData();
+				var firstEntry = forecastArray[0].querySelector("period").getAttribute("textForecastName");
+				var today = "Today";
 				if (this.config.language === "f") {
-					forecastObj.date = "aujourd'hui";
-				} else {
-					forecastObj.date = "Today";
+					today = "Aujourd'hui";
 				}
+				var forecastObj = new ForecastData();
+				forecastObj.date = today;
 				for (let i = 0; i < 10; i += 1) {
-					if ((firstEntry === "Today" && i % 2 == 0) || (firstEntry != "Today" && i % 2 == 1)) {
+					if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
 						forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
 						forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
 						forecastObj.temp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
@@ -132,7 +132,12 @@ Module.register("MMM-EnvCanada", {
 						var name = warningsArray[i].getAttribute("name");
 						if (!name || name === this.config.marineLocation) {
 							var event = warningsArray[i].querySelector("event");
-							marine += "<b>" + event.getAttribute("name") + ".</b> ";
+							if (event) {
+								var status = event.getAttribute("status");
+								if (status && (status === "EN VIGUEUR" || status === "IN EFFECT")) {
+									marine += "<b>" + event.getAttribute("name") + ".</b> ";
+								}
+							}
 						}
 					}
 				}
