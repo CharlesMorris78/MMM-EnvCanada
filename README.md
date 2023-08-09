@@ -17,7 +17,7 @@ MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather fo
 	```
 2. Clone the repository
 	```bash
-	git clone https://github.com/CharlesMorris78/MMM-EnvCanada.git
+	git clone https://github.com/CharlesMorris78/MMM-EnvCanada
 	```
 3. Add the module to your Magic Mirror by copying the sample configuration below and add that to your `config.js`
 
