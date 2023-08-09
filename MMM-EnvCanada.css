@@ -1,0 +1,27 @@
+.MMM-EnvCanada {
+  max-width: 400px;
+  text-align: left;
+  line-height: 1;
+}
+
+.MMM-EnvCanada .forecastable {
+  padding-top: 5px;
+  padding-left: 20px;
+  line-height: 1.3;
+}
+
+.MMM-EnvCanada .high-temp {
+  color: #f7ca97;
+}
+
+.MMM-EnvCanada .low-temp {
+  color: #91bee3;
+}
+
+.wi-thunderstorm, .wi-day-thunderstorm, .wi-night-thunderstorm, .wi-day-rain, .wi-rain, .wi-day-showers, .wi-showers, .wi-night-alt-showers {
+  color: #6698F9;
+}
+
+.wi-day-sunny, .wi-day-cloudy, .wi-day-sprinkle, .wi-day-sunny-overcast {
+  color: #F5F5A9;
+}

@@ -1,0 +1,37 @@
+<div>{{mytext | safe}}</div>
+<div>{{marine | safe}}</div>
+{% if forecastDays > 2 %}
+	<table class="forecastable">
+		<tr>
+		{% if language == "f" %}
+			<td> </td>
+			<td><i>jour</i></td>
+			<td><i>max</i></td>
+			<td> </td>
+			<td><i>nuit</i></td>
+			<td><i>min</i></td>
+			<td> </td>
+		{% else %}
+			<td> </td>
+			<td><i>day</i></td>
+			<td><i>high</i></td>
+			<td> </td>
+			<td><i>night</i></td>
+			<td><i>low</i></td>
+			<td> </td>
+		{% endif %}
+		</tr>
+		{% set forecast = forecast.slice(0, forecastDays) %}
+		{% for f in forecast %}
+			<tr>
+				<td>{{ f.date }}</td>
+				<td class="bright"><span class="wi wi-{{ f.condition }}"></span></td>
+				<td class="high-temp">{{ f.temp }}</td>
+				<td>{{ f.pop }}</td>
+				<td class="bright"><span class="wi wi-{{ f.nightCondition }}"></span></td>
+				<td class="low-temp">{{ f.nightTemp }}</td>
+				<td>{{ f.nightPop }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}
