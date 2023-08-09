@@ -1,5 +1,5 @@
 # MMM-EnvCanada
-MagicMirror² Module to display weather information from Environment Canada.
+MagicMirror² Module to display weather forecast information from Environment Canada.
 
 Version 1.0, August 2023 Copyright © Charles Morris
 
@@ -8,7 +8,7 @@ Version 1.0, August 2023 Copyright © Charles Morris
 
 ![Example Screenshot](screenshot.png?raw=true)
 ## Purpose
-MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather forecast information. The default Weather Module has an envcanada provider to display Environment Canada data in the MagicMirror² Weather Module. However, Environment Canada provides more information than the default module can display. This module displays the text forecast, the marine wind forecast, and a graphical display of the forecast for day and night. Some code from the envcanada provider has been incorporated or modified and incorporated into this module.
+MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather forecast information. The default Weather Module has an envcanada provider to display Environment Canada data in the MagicMirror² Weather Module. However, Environment Canada provides more information than the default module can display. This module displays the text forecast, the marine wind forecast, and a graphical display of the forecast for day and night. This module does not display current conditions, as the default weather module provides that function very well. Some code from the envcanada provider has been incorporated or modified and incorporated into this module.
 
 ## Installation
 1. Navigate to the `modules` folder
