@@ -13,6 +13,8 @@
  * If configured, also displays Environment Canada forecast for 5 days,
  * showing two lines for "today" and "tonight" forecasts (Weather Module only 
  * shows one line)
+ * 
+ * If configured, also displays Marine Wind forecast
  */
  
 let	forecast = "Starting ...";
