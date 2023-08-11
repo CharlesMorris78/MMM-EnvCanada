@@ -46,6 +46,7 @@ Here's an example of a basic config for the module. See full list of available s
 ## Configuration
 | **Setting** | **Description**|
 | --- | --- |
+| `header` | Text for the module header. If paramter is not provided, the Environment Canada location text for the configured siteCode is used.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `Environment Canada location text for the configured siteCode`</li><li>**Possible values:** `Any text string.`</li></ul> |
 | `language` | The display language provided by Environment Canada: English (e) or French (f).<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"e"`</li><li>**Possible values:** `"e"` or `"f"`</li></ul> |
 | `marineEndMonth` | Final month to display the Marine Forecast.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10`</li><li>**Possible values:** 1 through 12</li></ul> |
 | `marineLocation` | Location for Marine Forecast. If language is f (French), must be the French language version of the location.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see [Environment Canada website](https://weather.gc.ca/marine/index_e.html)</li></ul> |
