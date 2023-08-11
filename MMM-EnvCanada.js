@@ -17,10 +17,11 @@
  * If configured, also displays Marine Wind forecast
  */
  
-let	forecast = "Starting ...";
-let marine = "";
-let myType = "day-sunny";
-let days = [];
+var locationHeader = "";
+var	forecast = "Starting ...";
+var marine = "";
+var myType = "day-sunny";
+var days = [];
  
 Module.register("MMM-EnvCanada", {
 	// Default module config.
@@ -34,7 +35,9 @@ Module.register("MMM-EnvCanada", {
 		showForecastDays: 5,
 		marineRegion: "",
 		marineSubRegion: "",
-		marineLocation: ""
+		marineLocation: "",
+		marineStartMonth: 5,
+		marineEndMonth: 10
 	},
 	
 	start() {
@@ -44,6 +47,9 @@ Module.register("MMM-EnvCanada", {
 		this.getForecast();
 		if (this.config.textForecasts > 5) this.config.textForecasts = 5;
 		if (this.config.showForecastDays > 5) this.config.showForecastDays = 5;
+		if (this.config.marineStartMonth < 1) this.config.marineStartMonth = 1;
+		if (this.config.marineEndMonth > 12) this.config.marineEndMonth = 12;
+		if (this.data.header) locationHeader = this.data.header;
 	},
 	
 	getStyles() {
@@ -69,7 +75,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	getHeader() {
-		return this.data.header;
+		return locationHeader;
 	},
 	
 	getForecast() {
@@ -77,6 +83,11 @@ Module.register("MMM-EnvCanada", {
 
 		performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
 		.then((data) => {
+			if (locationHeader == "") {
+				locationHeader = data.querySelector("siteData location name").textContent;
+				if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
+				else locationHeader = "Forecast for " + locationHeader;
+			}
 			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
 			forecast = "";
 			for (let i = 0; i < this.config.textForecasts; i += 1) {
@@ -125,7 +136,16 @@ Module.register("MMM-EnvCanada", {
 		});
 		
 		if (this.config.marineRegion != "") {
-			performWebRequest(this.getMarineUrl(), "xml", true, undefined, undefined)
+			const date = new Date();
+			var month = date.getMonth() + 1;
+			var inPeriod = true;
+			if (this.config.marineStartMonth < this.config.marineEndMonth) {
+				if (month < this.config.marineStartMonth || month > this.config.marineEndMonth) inPeriod = false;
+			} else {
+				if (month < this.config.marineStartMonth && month > this.config.marineEndMonth) inPeriod = false;
+			}
+			
+			if (inPeriod) performWebRequest(this.getMarineUrl(), "xml", true, undefined, undefined)
 			.then((data) => {
 				var warningsArray = data.querySelectorAll("marineData warnings location");
 				marine = "";
