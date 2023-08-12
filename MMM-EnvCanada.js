@@ -45,8 +45,8 @@ Module.register("MMM-EnvCanada", {
 			this.getForecast();
 			}, this.config.updateInterval);
 		this.getForecast();
-		if (this.config.textForecasts > 5) this.config.textForecasts = 5;
-		if (this.config.showForecastDays > 5) this.config.showForecastDays = 5;
+		if (this.config.textForecasts > 6) this.config.textForecasts = 6;
+		if (this.config.showForecastDays > 6) this.config.showForecastDays = 6;
 		if (this.config.marineStartMonth < 1) this.config.marineStartMonth = 1;
 		if (this.config.marineEndMonth > 12) this.config.marineEndMonth = 12;
 		if (this.data.header) locationHeader = this.data.header;
@@ -114,7 +114,7 @@ Module.register("MMM-EnvCanada", {
 				}
 				var forecastObj = new ForecastData();
 				forecastObj.date = today;
-				for (let i = 0; i < 10; i += 1) {
+				for (let i = 0; i < 12; i += 1) {
 					if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
 						forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
 						forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
