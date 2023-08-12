@@ -35,7 +35,7 @@ Here's an example of a basic config for the module. See full list of available s
 				language: "e",
 				textForecasts: 2,
 				showAlerts: true,
-				showforecastDays: 5,
+				showForecastDays: 5,
 				marineRegion: "great_lakes",
 				marineSubRegion: "m0000144",
 				marineLocation: "Eastern Lake Ontario"
@@ -55,9 +55,9 @@ Here's an example of a basic config for the module. See full list of available s
 | `marineSubRegion` | The subregion code for Marine Forecast.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see the Environment Canada document listing all the [sub region codes](https://dd.weather.gc.ca/marine_weather/docs/region_list_regions_en.csv)</li></ul> |
 | `provCode` | The 2-character province code for the selected city/town.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"ON"`</li><li>**Possible values:** see the Environment Canada document listing all the [siteCode and provCode values for a Canadian city/town](https://dd.weather.gc.ca/citypage_weather/docs/site_list_en.csv)</li></ul> |
 | `showAlerts` | Boolean to decide if weather warnings should be included in the forecast text.<br><br> <ul><li>**Type:** `boolean`</li><li>**Default:** `true`</li><li>**Possible values:** `true` or `false`</li></ul> |
-| `showforecastDays` | The number of days to display the forecast in graphical format. If less than 3, no graphical forecast is displayed.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `5`</li><li>**Possible values:** `0` to `5`</li></ul> |
+| `showforecastDays` | The number of days to display the forecast in graphical format. If less than 3, no graphical forecast is displayed.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `5`</li><li>**Possible values:** `0` to `6`</li></ul> |
 | `siteCode` | The city/town unique identifier for which weather is to be displayed. Format is 's0000000'.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"s1234567"` which is not valid. Must be set to a valid entry.</li><li>**Possible values:** see the Environment Canada document listing all the [siteCode and provCode values for a Canadian city/town](https://dd.weather.gc.ca/citypage_weather/docs/site_list_en.csv)</li></ul> |
-| `textForecasts` | The number of text forecasts to display. Environment Canada provides two forecasts for each day: today and tonight. If set to 0, no text forecast is disdplayed.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `2`</li><li>**Possible values:** `0` to `5`</li></ul> |
+| `textForecasts` | The number of text forecasts to display. Environment Canada provides two forecasts for each day: today and tonight. If set to 0, no text forecast is disdplayed.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `2`</li><li>**Possible values:** `0` to `6`</li></ul> |
 | `updateInterval` | The duration of time between each attempt to refresh the forecast information, in miliseconds.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10 * 60 * 1000` which is 10 minutes</li></ul> |
 
 ## Support
