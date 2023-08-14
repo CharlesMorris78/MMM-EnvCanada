@@ -20,6 +20,11 @@
 var locationHeader = "";
 var	forecast = "Starting ...";
 var marine = "";
+var airquality = "";
+var airQI = "";
+var airQIStat = "low";
+var airQIF = "";
+var airQIFStat = "low";
 var myType = "day-sunny";
 var days = [];
  
@@ -37,19 +42,22 @@ Module.register("MMM-EnvCanada", {
 		marineSubRegion: "",
 		marineLocation: "",
 		marineStartMonth: 5,
-		marineEndMonth: 10
+		marineEndMonth: 10,
+		airQualityProv: "",
+		airQualityRegion: ""
 	},
 	
 	start() {
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
-		this.getForecast();
+		if (this.config.language != "f") this.config.language = "e";
 		if (this.config.textForecasts > 6) this.config.textForecasts = 6;
 		if (this.config.showForecastDays > 6) this.config.showForecastDays = 6;
 		if (this.config.marineStartMonth < 1) this.config.marineStartMonth = 1;
 		if (this.config.marineEndMonth > 12) this.config.marineEndMonth = 12;
 		if (this.data.header) locationHeader = this.data.header;
+		this.getForecast();
 	},
 	
 	getStyles() {
@@ -68,6 +76,11 @@ Module.register("MMM-EnvCanada", {
 		return {
 			mytext: forecast,
 			marine: marine,
+			airquality: airquality,
+			airQI: airQI,
+			airQIF: airQIF,
+			airQIStat: airQIStat,
+			airQIFStat: airQIFStat,
 			language: this.config.language,
 			forecastDays: this.config.showForecastDays,
 			forecast: days
@@ -176,22 +189,52 @@ Module.register("MMM-EnvCanada", {
 				}
 
 				if (marine != "") {
-					if (this.config.language === "f") marine = "<br><b>Météo maritime:</b> " + marine;
-					else marine = "<br><b>Marine Forecast:</b> " + marine;
+					if (this.config.language === "f") marine = "<b>Météo maritime:</b> " + marine;
+					else marine = "<b>Marine Forecast:</b> " + marine;
 					this.updateDom(0);
 				}
+			});
+		}
+		
+		if (this.config.airQualityRegion != "") {
+			performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
+			.then((data) => {
+				var region = data.querySelector("conditionAirQuality region");
+				if (region) {
+					airquality = region.getAttribute("nameEn");
+					airQI = data.querySelector("conditionAirQuality airQualityHealthIndex").textContent;
+					if (airQI > 6) airQIStat = "high";
+					else if (airQI > 3) airQIStat = "med";
+					else airQIStat = "low";
+					this.updateDom(0);
+				}
+			});
+
+			performWebRequest(this.getAirQualityForecastUrl(), "xml", true, undefined, undefined)
+			.then((data) => {
+				airQIF = data.querySelector("forecastAirQuality forecastGroup forecast airQualityHealthIndex").textContent;
+					if (airQIF > 6) airQIFStat = "high";
+					else if (airQIF > 3) airQIFStat = "med";
+					else airQIFStat = "low";
+				this.updateDom(0);
 			});
 		}
 	},
 	
 	getUrl() {
-		if (this.config.language != "f") this.config.language = "e";
 		return `https://dd.weather.gc.ca/citypage_weather/xml/${this.config.provCode}/${this.config.siteCode}_${this.config.language}.xml`;
 	},
 	
 	getMarineUrl() {
-		if (this.config.language != "f") this.config.language = "e";
 		return `https://dd.weather.gc.ca/marine_weather/xml/${this.config.marineRegion}/${this.config.marineSubRegion}_${this.config.language}.xml`;
+	},
+	
+	getAirQualityUrl() {
+		return `https://dd.weather.gc.ca/air_quality/aqhi/${this.config.airQualityProv}/observation/realtime/xml/AQ_OBS_${this.config.airQualityRegion}_CURRENT.xml`;
+	},
+	
+	getAirQualityForecastUrl() {
+		return `https://dd.weather.gc.ca/air_quality/aqhi/${this.config.airQualityProv}/forecast/realtime/xml/AQ_FCST_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
 	
 	convertWeatherType(weatherType) {

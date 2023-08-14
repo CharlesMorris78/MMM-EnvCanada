@@ -1,5 +1,14 @@
 <div>{{mytext | safe}}</div>
-<div>{{marine | safe}}</div>
+{% if marine != "" %}
+	<div class="marinepad">{{marine | safe}}</div>
+{% endif %}
+{% if airquality != ""  %}
+	{% if language == "f" %}
+		<div class="marinepad"><b>{{airquality}} - Cote air santé:</b> <span class="{{airQIStat}}-aqi">{{airQI}}</span> maximum prévu: <span class="{{airQIFStat}}-aqi">{{airQIF}}</span></div>
+	{% else %}
+		<div class="marinepad"><b>{{airquality}} - Air Quality Index:</b> <span class="{{airQIStat}}-aqi">{{airQI}}</span> forecast: <span class="{{airQIFStat}}-aqi">{{airQIF}}</span></div>
+	{% endif %}
+{% endif %}
 {% if forecastDays > 2 %}
 	<table class="forecastable">
 		<tr>

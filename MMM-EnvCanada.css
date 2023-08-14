@@ -10,6 +10,28 @@
   line-height: 1.3;
 }
 
+.MMM-EnvCanada .marinepad {
+  padding-top: 10px;
+}
+
+.MMM-EnvCanada .high-aqi {
+  color: #cc0000;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.MMM-EnvCanada .mod-aqi {
+  color: #f7ca97;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.MMM-EnvCanada .low-aqi {
+  color: #6698F9;
+  font-size: 25px;
+  font-weight: 700;
+}
+
 .MMM-EnvCanada .high-temp {
   color: #f7ca97;
 }
