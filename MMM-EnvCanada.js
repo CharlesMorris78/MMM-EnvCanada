@@ -65,7 +65,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	getScripts() {
-		return ["forecastdata.js"];
+		return ["forecastdata.js", this.file("../default/utils.js")];
 	},
 	
 	getTemplate() {
