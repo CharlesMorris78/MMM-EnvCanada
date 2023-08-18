@@ -65,7 +65,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	getScripts() {
-		return ["forecastdata.js", this.file("../default/utils.js")];
+		return ["forecastdata.js"];
 	},
 	
 	getTemplate() {
@@ -94,7 +94,7 @@ Module.register("MMM-EnvCanada", {
 	getForecast() {
 		days.splice(0);
 
-		performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
+		this.performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
 		.then((data) => {
 			if (locationHeader == "") {
 				locationHeader = data.querySelector("siteData location name").textContent;
@@ -158,7 +158,7 @@ Module.register("MMM-EnvCanada", {
 				if (month < this.config.marineStartMonth && month > this.config.marineEndMonth) inPeriod = false;
 			}
 			
-			if (inPeriod) performWebRequest(this.getMarineUrl(), "xml", true, undefined, undefined)
+			if (inPeriod) this.performWebRequest(this.getMarineUrl(), "xml", true, undefined, undefined)
 			.then((data) => {
 				var warningsArray = data.querySelectorAll("marineData warnings location");
 				marine = "";
@@ -197,7 +197,7 @@ Module.register("MMM-EnvCanada", {
 		}
 		
 		if (this.config.airQualityRegion != "") {
-			performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
+			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
 			.then((data) => {
 				var region = data.querySelector("conditionAirQuality region");
 				if (region) {
@@ -210,7 +210,7 @@ Module.register("MMM-EnvCanada", {
 				}
 			});
 
-			performWebRequest(this.getAirQualityForecastUrl(), "xml", true, undefined, undefined)
+			this.performWebRequest(this.getAirQualityForecastUrl(), "xml", true, undefined, undefined)
 			.then((data) => {
 				airQIF = data.querySelector("forecastAirQuality forecastGroup forecast airQualityHealthIndex").textContent;
 					if (airQIF > 6) airQIFStat = "high";
@@ -291,5 +291,136 @@ Module.register("MMM-EnvCanada", {
 		};
 
 		return weatherTypes.hasOwnProperty(weatherType) ? weatherTypes[weatherType] : null;
-	}
+	},
+	
+	async performWebRequest(url, type = "json", useCorsProxy = false, requestHeaders = undefined, expectedResponseHeaders = undefined) {
+		const request = {};
+		let requestUrl;
+		if (useCorsProxy) {
+			requestUrl = this.getCorsUrl(url, requestHeaders, expectedResponseHeaders);
+		} else {
+			requestUrl = url;
+			request.headers = this.getHeadersToSend(requestHeaders);
+		}
+		const response = await fetch(requestUrl, request);
+		const data = await response.text();
+
+		if (type === "xml") {
+			return new DOMParser().parseFromString(data, "text/html");
+		} else {
+			if (!data || !data.length > 0) return undefined;
+
+			const dataResponse = JSON.parse(data);
+			if (!dataResponse.headers) {
+				dataResponse.headers = this.getHeadersFromResponse(expectedResponseHeaders, response);
+			}
+			return dataResponse;
+		}
+	},
+
+/**
+ * Gets a URL that will be used when calling the CORS-method on the server.
+ * @param {string} url the url to fetch from
+ * @param {Array.<{name: string, value:string}>} requestHeaders the HTTP headers to send
+ * @param {Array.<string>} expectedResponseHeaders the expected HTTP headers to receive
+ * @returns {string} to be used as URL when calling CORS-method on server.
+ */
+	getCorsUrl(url, requestHeaders, expectedResponseHeaders) {
+		if (!url || url.length < 1) {
+			throw new Error(`Invalid URL: ${url}`);
+		} else {
+			let corsUrl = `${location.protocol}//${location.host}/cors?`;
+
+			const requestHeaderString = this.getRequestHeaderString(requestHeaders);
+			if (requestHeaderString) corsUrl = `${corsUrl}sendheaders=${requestHeaderString}`;
+
+			const expectedResponseHeadersString = this.getExpectedResponseHeadersString(expectedResponseHeaders);
+			if (requestHeaderString && expectedResponseHeadersString) {
+				corsUrl = `${corsUrl}&expectedheaders=${expectedResponseHeadersString}`;
+			} else if (expectedResponseHeadersString) {
+				corsUrl = `${corsUrl}expectedheaders=${expectedResponseHeadersString}`;
+			}
+
+			if (requestHeaderString || expectedResponseHeadersString) {
+				return `${corsUrl}&url=${url}`;
+			}
+			return `${corsUrl}url=${url}`;
+		}
+	},
+
+	/**
+	 * Gets the part of the CORS URL that represents the HTTP headers to send.
+	 * @param {Array.<{name: string, value:string}>} requestHeaders the HTTP headers to send
+	 * @returns {string} to be used as request-headers component in CORS URL.
+	 */
+	getRequestHeaderString(requestHeaders) {
+		let requestHeaderString = "";
+		if (requestHeaders) {
+			for (const header of requestHeaders) {
+				if (requestHeaderString.length === 0) {
+					requestHeaderString = `${header.name}:${encodeURIComponent(header.value)}`;
+				} else {
+					requestHeaderString = `${requestHeaderString},${header.name}:${encodeURIComponent(header.value)}`;
+				}
+			}
+			return requestHeaderString;
+		}
+		return undefined;
+	},
+
+	/**
+	 * Gets headers and values to attach to the web request.
+	 * @param {Array.<{name: string, value:string}>} requestHeaders the HTTP headers to send
+	 * @returns {object} An object specifying name and value of the headers.
+	 */
+	getHeadersToSend(requestHeaders) {
+		const headersToSend = {};
+		if (requestHeaders) {
+			for (const header of requestHeaders) {
+				headersToSend[header.name] = header.value;
+			}
+		}
+
+		return headersToSend;
+	},
+
+	/**
+	 * Gets the part of the CORS URL that represents the expected HTTP headers to receive.
+	 * @param {Array.<string>} expectedResponseHeaders the expected HTTP headers to receive
+	 * @returns {string} to be used as the expected HTTP-headers component in CORS URL.
+	 */
+	getExpectedResponseHeadersString(expectedResponseHeaders) {
+		let expectedResponseHeadersString = "";
+		if (expectedResponseHeaders) {
+			for (const header of expectedResponseHeaders) {
+				if (expectedResponseHeadersString.length === 0) {
+					expectedResponseHeadersString = `${header}`;
+				} else {
+					expectedResponseHeadersString = `${expectedResponseHeadersString},${header}`;
+				}
+			}
+			return expectedResponseHeaders;
+		}
+		return undefined;
+	},
+
+	/**
+	 * Gets the values for the expected headers from the response.
+	 * @param {Array.<string>} expectedResponseHeaders the expected HTTP headers to receive
+	 * @param {Response} response the HTTP response
+	 * @returns {string} to be used as the expected HTTP-headers component in CORS URL.
+	 */
+	getHeadersFromResponse(expectedResponseHeaders, response) {
+		const responseHeaders = [];
+
+		if (expectedResponseHeaders) {
+			for (const header of expectedResponseHeaders) {
+				const headerValue = response.headers.get(header);
+				responseHeaders.push({ name: header, value: headerValue });
+			}
+		}
+
+		return responseHeaders;
+	},
+
 });
