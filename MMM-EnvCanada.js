@@ -96,10 +96,13 @@ Module.register("MMM-EnvCanada", {
 
 		this.performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
 		.then((data) => {
-			if (locationHeader == "") {
-				locationHeader = data.querySelector("siteData location name").textContent;
-				if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
-				else locationHeader = "Forecast for " + locationHeader;
+			if (locationHeader == "false" {
+				locationHeader == "" } else {
+					if (locationHeader == "") {
+						locationHeader = data.querySelector("siteData location name").textContent;
+						if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
+						else locationHeader = "Forecast for " + locationHeader;
+				}
 			}
 			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
 			forecast = "";
