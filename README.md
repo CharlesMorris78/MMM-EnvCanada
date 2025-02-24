@@ -1,14 +1,14 @@
 # MMM-EnvCanada
 MagicMirror² Module to display weather forecast information from Environment Canada.
 
-Version 1.1, August 2023 Copyright © Charles Morris
+Version 1.0, August 2023 Copyright © Charles Morris
 
 [![Platform](https://img.shields.io/badge/platform-MagicMirror-informational)](https://MagicMirror.builders)
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
 ![Example Screenshot](screenshot.png?raw=true)
 ## Purpose
-MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather forecast information. The default Weather Module has an envcanada provider to display Environment Canada data in the MagicMirror² Weather Module. However, Environment Canada provides more information than the default module can display. This module displays the text forecast, the marine wind forecast, the Air Quality Health Index, and a graphical display of the forecast for day and night. This module does not display current conditions, as the default weather module provides that function very well. Some code from the envcanada provider has been incorporated or modified and incorporated into this module.
+MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather forecast information. The default Weather Module has an envcanada provider to display Environment Canada data in the MagicMirror² Weather Module. However, Environment Canada provides more information than the default module can display. This module displays the text forecast, the marine wind forecast, and a graphical display of the forecast for day and night. This module does not display current conditions, as the default weather module provides that function very well. Some code from the envcanada provider has been incorporated or modified and incorporated into this module.
 
 ## Installation
 1. Navigate to the `modules` folder
@@ -19,17 +19,7 @@ MMM-EnvCanada is a MagicMirror² Module to display Environment Canada weather fo
 	```bash
 	git clone https://github.com/CharlesMorris78/MMM-EnvCanada.git
 	```
-3. Add the module to your MagicMirror² by copying the sample configuration below and add that to your `config.js`
-
-## Update
-1. Navigate to the `MMM-EnvCanada` folder
-	```bash
-	cd ~/MagicMirror/modules/MMM-EnvCanada
-	```
-2. Update from the repository
-	```bash
-	git pull
-	```
+3. Add the module to your Magic Mirror by copying the sample configuration below and add that to your `config.js`
 
 ## Sample Config
 Here's an example of a basic config for the module. See full list of available settings below under [Configuration](#configuration)
@@ -56,9 +46,7 @@ Here's an example of a basic config for the module. See full list of available s
 ## Configuration
 | **Setting** | **Description**|
 | --- | --- |
-| `airQualityProv` | Administrative zone code for Air Quality Health Index. If paramter is not provided, the index is not displayed.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** `atl`, `ont`, `pnr`, `pyr`, `que`. See [Environment Canada website](https://dd.weather.gc.ca/air_quality/doc/AQHI_XML_File_List.xml) for details.</li></ul> |
-| `airQualityRegion` | Region code for Air Quality Health Index. If paramter is not provided, the index is not displayed.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:**  See [Environment Canada website](https://dd.weather.gc.ca/air_quality/doc/AQHI_XML_File_List.xml) for details.</li></ul> |
-| `header` | Text for the module header. If paramter is not provided, the Environment Canada location text for the configured siteCode is used.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `Environment Canada location text for the configured siteCode`</li><li>**Possible values:** `Any text string.`</li></ul> |
+| `header` | Text for the module header. If parameter is not provided, the Environment Canada location text for the configured siteCode is used.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `Environment Canada location text for the configured siteCode`</li><li>**Possible values:** `Any text string. If set to false, no header will be displayed`</li></ul> |
 | `language` | The display language provided by Environment Canada: English (e) or French (f).<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"e"`</li><li>**Possible values:** `"e"` or `"f"`</li></ul> |
 | `marineEndMonth` | Final month to display the Marine Forecast.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10`</li><li>**Possible values:** 1 through 12</li></ul> |
 | `marineLocation` | Location for Marine Forecast. If language is f (French), must be the French language version of the location.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see [Environment Canada website](https://weather.gc.ca/marine/index_e.html)</li></ul> |

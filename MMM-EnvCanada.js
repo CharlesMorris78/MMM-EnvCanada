@@ -1,9 +1,9 @@
 /* MagicMirror²
- * Module: EnvCanada
+ * Module: EnvCanada 
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 1.0 August 2023
+ * version 1.2 February 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -96,10 +96,14 @@ Module.register("MMM-EnvCanada", {
 
 		this.performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
 		.then((data) => {
-			if (locationHeader == "") {
-				locationHeader = data.querySelector("siteData location name").textContent;
-				if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
-				else locationHeader = "Forecast for " + locationHeader;
+			if (locationHeader == "false") {
+				locationHeader = ""
+			} else {
+				if (locationHeader == "") {
+					locationHeader = data.querySelector("siteData location name").textContent;
+					if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
+					else locationHeader = "Forecast for " + locationHeader;
+				}
 			}
 			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
 			forecast = "";

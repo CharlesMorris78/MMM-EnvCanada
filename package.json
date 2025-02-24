@@ -1,6 +1,6 @@
 {
   "name": "MMM-EnvCanada",
-  "version": "1.1.0",
+  "version": "1.2",
   "type": "module",
   "displayName": "MMM-EnvCanadas",
   "description": "MagicMirror² Module to display weather forecast information from Environment Canada. ",
