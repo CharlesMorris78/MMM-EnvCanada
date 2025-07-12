@@ -3,7 +3,7 @@
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 1.2 February 2025
+ * version 1.3 July 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -18,7 +18,7 @@
  */
  
 var locationHeader = "";
-var	forecast = "Starting ...";
+var forecast = "Starting ...";
 var marine = "";
 var airquality = "";
 var airQI = "";
