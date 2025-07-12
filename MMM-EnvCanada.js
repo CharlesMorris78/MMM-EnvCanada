@@ -27,6 +27,8 @@ var airQIF = "";
 var airQIFStat = "low";
 var myType = "day-sunny";
 var days = [];
+var fileSuffix = "";
+var mfileSuffix = "";
  
 Module.register("MMM-EnvCanada", {
 	// Default module config.
@@ -34,7 +36,7 @@ Module.register("MMM-EnvCanada", {
 		updateInterval: 10 * 60 * 1000,
 		siteCode: "s1234567",
 		provCode: "ON",
-		language: "e",
+		language: "en",
 		textForecasts: 2,
 		showAlerts: true,
 		showForecastDays: 5,
@@ -51,7 +53,7 @@ Module.register("MMM-EnvCanada", {
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
-		if (this.config.language != "f") this.config.language = "e";
+		if (this.config.language != "fr") this.config.language = "en";
 		if (this.config.textForecasts > 6) this.config.textForecasts = 6;
 		if (this.config.showForecastDays > 6) this.config.showForecastDays = 6;
 		if (this.config.marineStartMonth < 1) this.config.marineStartMonth = 1;
@@ -90,115 +92,14 @@ Module.register("MMM-EnvCanada", {
 	getHeader() {
 		return locationHeader;
 	},
+
 	
 	getForecast() {
 		days.splice(0);
 
-		this.performWebRequest(this.getUrl(), "xml", true, undefined, undefined)
-		.then((data) => {
-			if (locationHeader == "false") {
-				locationHeader = ""
-			} else {
-				if (locationHeader == "") {
-					locationHeader = data.querySelector("siteData location name").textContent;
-					if (this.config.language == "f") locationHeader = "Prévisions pour " + locationHeader;
-					else locationHeader = "Forecast for " + locationHeader;
-				}
-			}
-			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
-			forecast = "";
-			for (let i = 0; i < this.config.textForecasts; i += 1) {
-				forecast += "<b>" + forecastArray[i].querySelector("period").getAttribute("textForecastName") + ":</b> ";
-				forecast += forecastArray[i].querySelector("textSummary").textContent + " ";
-			}
-			
-			if (this.config.showAlerts) {
-				var alert = data.querySelectorAll("siteData warnings event");
-				if (alert && alert.length > 0) {
-					for (let i = 0; i < alert.length; i += 1) {
-						if (alert[i].getAttribute("type") === "warning")  {
-							forecast = "<b>" + alert[i].getAttribute("description") + "</b>. " + forecast;
-						}
-					}
-				}
-			}
-			
-			if (this.config.showForecastDays > 2) {
-				var firstEntry = forecastArray[0].querySelector("period").getAttribute("textForecastName");
-				var today = "Today";
-				if (this.config.language === "f") {
-					today = "Aujourd'hui";
-				}
-				var forecastObj = new ForecastData();
-				forecastObj.date = today;
-				for (let i = 0; i < 12; i += 1) {
-					if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
-						forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
-						forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
-						forecastObj.temp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
-						forecastObj.pop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
-						if (forecastObj.pop > 0) forecastObj.pop += "%";
-					} else {
-						forecastObj.nightCondition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
-						forecastObj.nightTemp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
-						forecastObj.nightPop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
-						if (forecastObj.nightPop > 0) forecastObj.nightPop += "%";
-						days.push(forecastObj);
-						forecastObj = new ForecastData();
-					}
-				}
-			}
-			
-			this.updateDom(0);
-		});
+		this.fetchForecastFile();
+		this.fetchMarineFile();
 		
-		if (this.config.marineRegion != "") {
-			const date = new Date();
-			var month = date.getMonth() + 1;
-			var inPeriod = true;
-			if (this.config.marineStartMonth < this.config.marineEndMonth) {
-				if (month < this.config.marineStartMonth || month > this.config.marineEndMonth) inPeriod = false;
-			} else {
-				if (month < this.config.marineStartMonth && month > this.config.marineEndMonth) inPeriod = false;
-			}
-			
-			if (inPeriod) this.performWebRequest(this.getMarineUrl(), "xml", true, undefined, undefined)
-			.then((data) => {
-				var warningsArray = data.querySelectorAll("marineData warnings location");
-				marine = "";
-				if (warningsArray && warningsArray.length > 0) {
-					for (let i = 0; i < warningsArray.length; i += 1) {
-						var name = warningsArray[i].getAttribute("name");
-						if (!name || name === this.config.marineLocation) {
-							var event = warningsArray[i].querySelector("event");
-							if (event) {
-								var status = event.getAttribute("status");
-								if (status && (status === "EN VIGUEUR" || status === "IN EFFECT")) {
-									marine += "<b>" + event.getAttribute("name") + ".</b> ";
-								}
-							}
-						}
-					}
-				}
-				
-				var marineArray = data.querySelectorAll("marineData regularForecast location");
-				if (marineArray && marineArray.length > 0) {
-					for (let i = 0; i < marineArray.length; i += 1) {
-						var name = marineArray[i].getAttribute("name");
-						if (!name || name === this.config.marineLocation) {
-							var wind = marineArray[i].querySelector("weatherCondition wind");
-							marine += wind.textContent + " ";
-						}
-					}
-				}
-
-				if (marine != "") {
-					if (this.config.language === "f") marine = "<b>Météo maritime:</b> " + marine;
-					else marine = "<b>Marine Forecast:</b> " + marine;
-					this.updateDom(0);
-				}
-			});
-		}
 		
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
@@ -225,12 +126,167 @@ Module.register("MMM-EnvCanada", {
 		}
 	},
 	
-	getUrl() {
-		return `https://dd.weather.gc.ca/citypage_weather/xml/${this.config.provCode}/${this.config.siteCode}_${this.config.language}.xml`;
+	getCurrentHourGMT() {
+		const now = new Date();
+		return now.toISOString().substring(11, 13); // "HH" in GMT
+	},
+
+	async fetchForecastFile() {
+		let forecastURL = "https://dd.weather.gc.ca/citypage_weather/" + this.config.provCode;
+		const hour = this.getCurrentHourGMT();
+		forecastURL += `/${hour}/`;
+		fileSuffix = this.config.siteCode + "_" + this.config.language + ".xml";
+
+		// Fetch the file from the directory listing
+		const request = {};
+		requestUrl = this.getCorsUrl(forecastURL, undefined, undefined);
+		const response = await fetch(requestUrl, request);
+		const data = await response.text();
+
+		let forecastFile = '';
+		let forecastFileURL = '';
+		let nextFile = data.split(fileSuffix);
+		if (nextFile.length > 1) {
+			// Find the last occurrence
+			forecastFile = nextFile[nextFile.length - 2].slice(-41) + fileSuffix;
+			forecastFileURL = forecastURL + forecastFile;
+			this.forecastCallback(forecastFileURL);
+		}
 	},
 	
-	getMarineUrl() {
-		return `https://dd.weather.gc.ca/marine_weather/xml/${this.config.marineRegion}/${this.config.marineSubRegion}_${this.config.language}.xml`;
+	forecastCallback(forecastURL) {
+		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
+		.then((data) => {
+			if (locationHeader == "false") {
+				locationHeader = ""
+			} else {
+				if (locationHeader == "") {
+					locationHeader = data.querySelector("siteData location name").textContent;
+					if (this.config.language == "fr") locationHeader = "Prévisions pour " + locationHeader;
+					else locationHeader = "Forecast for " + locationHeader;
+				}
+			}
+			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
+			forecast = "";
+			for (let i = 0; i < this.config.textForecasts; i += 1) {
+				forecast += "<b>" + forecastArray[i].querySelector("period").getAttribute("textForecastName") + ":</b> ";
+				forecast += forecastArray[i].querySelector("textSummary").textContent + " ";
+			}
+			
+			if (this.config.showAlerts) {
+				var alert = data.querySelectorAll("siteData warnings event");
+				if (alert && alert.length > 0) {
+					for (let i = 0; i < alert.length; i += 1) {
+						if (alert[i].getAttribute("type") === "warning")  {
+							forecast = "<b>" + alert[i].getAttribute("description") + "</b>. " + forecast;
+						}
+					}
+				}
+			}
+			
+			if (this.config.showForecastDays > 2) {
+				var firstEntry = forecastArray[0].querySelector("period").getAttribute("textForecastName");
+				var today = "Today";
+				if (this.config.language === "fr") {
+					today = "Aujourd'hui";
+				}
+				var forecastObj = new ForecastData();
+				forecastObj.date = today;
+				for (let i = 0; i < 12; i += 1) {
+					if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
+						forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
+						forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
+						forecastObj.temp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
+						forecastObj.pop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
+						if (forecastObj.pop > 0) forecastObj.pop += "%";
+					} else {
+						forecastObj.nightCondition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
+						forecastObj.nightTemp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
+						forecastObj.nightPop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
+						if (forecastObj.nightPop > 0) forecastObj.nightPop += "%";
+						days.push(forecastObj);
+						forecastObj = new ForecastData();
+					}
+				}
+			}
+			
+			this.updateDom(0);
+		});
+	},
+	
+	async fetchMarineFile() {
+		if (this.config.marineRegion != "") {
+			const date = new Date();
+			var month = date.getMonth() + 1;
+			var inPeriod = true;
+			if (this.config.marineStartMonth < this.config.marineEndMonth) {
+				if (month < this.config.marineStartMonth || month > this.config.marineEndMonth) inPeriod = false;
+			} else {
+				if (month < this.config.marineStartMonth && month > this.config.marineEndMonth) inPeriod = false;
+			}
+			
+			if (inPeriod) {			
+				let forecastURL = "https://dd.weather.gc.ca/marine_weather/" + this.config.marineRegion;
+				const hour = this.getCurrentHourGMT();
+				forecastURL += `/${hour}/`;
+				mfileSuffix = this.config.marineSubRegion + "_" + this.config.language + ".xml";
+
+				// Fetch the file from the directory listing
+				const request = {};
+				requestUrl = this.getCorsUrl(forecastURL, undefined, undefined);
+				const response = await fetch(requestUrl, request);
+				const data = await response.text();
+
+				let forecastFile = '';
+				let forecastFileURL = '';
+				let nextFile = data.split(mfileSuffix);
+				if (nextFile.length > 1) {
+					// Find the last occurrence
+					forecastFile = nextFile[nextFile.length - 2].slice(-39) + mfileSuffix;
+					forecastFileURL = forecastURL + forecastFile;
+					this.marineCallback(forecastFileURL);
+				}
+			}
+		}
+	},
+	
+	marineCallback(forecastURL) {
+		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
+		.then((data) => {
+			var warningsArray = data.querySelectorAll("marineData warnings location");
+			marine = "";
+			if (warningsArray && warningsArray.length > 0) {
+				for (let i = 0; i < warningsArray.length; i += 1) {
+					var name = warningsArray[i].getAttribute("name");
+					if (!name || name === this.config.marineLocation) {
+						var event = warningsArray[i].querySelector("event");
+						if (event) {
+							var status = event.getAttribute("status");
+							if (status && (status === "EN VIGUEUR" || status === "IN EFFECT")) {
+								marine += "<b>" + event.getAttribute("name") + ".</b> ";
+							}
+						}
+					}
+				}
+			}
+			
+			var marineArray = data.querySelectorAll("marineData regularForecast location");
+			if (marineArray && marineArray.length > 0) {
+				for (let i = 0; i < marineArray.length; i += 1) {
+					var name = marineArray[i].getAttribute("name");
+					if (!name || name === this.config.marineLocation) {
+						var wind = marineArray[i].querySelector("weatherCondition wind");
+						marine += wind.textContent + " ";
+					}
+				}
+			}
+
+			if (marine != "") {
+				if (this.config.language === "fr") marine = "<b>Météo maritime:</b> " + marine;
+				else marine = "<b>Marine Forecast:</b> " + marine;
+				this.updateDom(0);
+			}
+		});
 	},
 	
 	getAirQualityUrl() {

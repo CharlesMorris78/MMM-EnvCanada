@@ -1,7 +1,7 @@
 # MMM-EnvCanada
 MagicMirror² Module to display weather forecast information from Environment Canada.
 
-Version 1.0, August 2023 Copyright © Charles Morris
+Version 1.3, August 2023 updated July 2025 Copyright © Charles Morris
 
 [![Platform](https://img.shields.io/badge/platform-MagicMirror-informational)](https://MagicMirror.builders)
 ![License](https://img.shields.io/badge/license-MIT-informational)
@@ -32,7 +32,7 @@ Here's an example of a basic config for the module. See full list of available s
 				siteCode: "s0000702",
 				provCode: "ON", 
 				updateInterval: 10 * 60 * 1000,
-				language: "e",
+				language: "en",
 				textForecasts: 2,
 				showAlerts: true,
 				showForecastDays: 5,
@@ -47,9 +47,9 @@ Here's an example of a basic config for the module. See full list of available s
 | **Setting** | **Description**|
 | --- | --- |
 | `header` | Text for the module header. If parameter is not provided, the Environment Canada location text for the configured siteCode is used.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `Environment Canada location text for the configured siteCode`</li><li>**Possible values:** `Any text string. If set to false, no header will be displayed`</li></ul> |
-| `language` | The display language provided by Environment Canada: English (e) or French (f).<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"e"`</li><li>**Possible values:** `"e"` or `"f"`</li></ul> |
+| `language` | The display language provided by Environment Canada: English (en) or French (fr).<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"en"`</li><li>**Possible values:** `"en"` or `"fr"`</li></ul> |
 | `marineEndMonth` | Final month to display the Marine Forecast.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10`</li><li>**Possible values:** 1 through 12</li></ul> |
-| `marineLocation` | Location for Marine Forecast. If language is f (French), must be the French language version of the location.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see [Environment Canada website](https://weather.gc.ca/marine/index_e.html)</li></ul> |
+| `marineLocation` | Location for Marine Forecast. If language is fr (French), must be the French language version of the location.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see [Environment Canada website](https://weather.gc.ca/marine/index_e.html)</li></ul> |
 | `marineRegion` | The region for Marine Forecast. If set to empty string (the default) no Marine Forecast is displayed. Other paramters must be correct or no Marine Forecast will be displayed.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** `"arctic"`, `"atlantic"`, `"great_lakes"`, `"hudson"`, `"mackenzie"`, `"pacific"`, `"prairies"`, `"st_lawrence"`</li></ul> |
 | `marineStartMonth` | First month to display the Marine Forecast.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `5`</li><li>**Possible values:** 1 through 12</li></ul> |
 | `marineSubRegion` | The subregion code for Marine Forecast.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see the Environment Canada document listing all the [sub region codes](https://dd.weather.gc.ca/marine_weather/docs/region_list_regions_en.csv)</li></ul> |
