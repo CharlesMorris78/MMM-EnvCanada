@@ -18,7 +18,7 @@
  */
  
 var locationHeader = "";
-var forecast = "Starting ...";
+var	forecast = "Starting ...";
 var marine = "";
 var airquality = "";
 var airQI = "";
@@ -50,6 +50,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	start() {
+		Log.log("MMM-EnvCanada starting version 1.4.");		
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
@@ -95,11 +96,8 @@ Module.register("MMM-EnvCanada", {
 
 	
 	getForecast() {
-		days.splice(0);
-
 		this.fetchForecastFile();
 		this.fetchMarineFile();
-		
 		
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
@@ -191,22 +189,33 @@ Module.register("MMM-EnvCanada", {
 					today = "Aujourd'hui";
 				}
 				var forecastObj = new ForecastData();
+				var newdays = [];
 				forecastObj.date = today;
+				try {
 				for (let i = 0; i < 12; i += 1) {
-					if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
-						forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
-						forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
-						forecastObj.temp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
-						forecastObj.pop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
-						if (forecastObj.pop > 0) forecastObj.pop += "%";
-					} else {
-						forecastObj.nightCondition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
-						forecastObj.nightTemp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
-						forecastObj.nightPop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
-						if (forecastObj.nightPop > 0) forecastObj.nightPop += "%";
-						days.push(forecastObj);
-						forecastObj = new ForecastData();
+						if ((firstEntry === today && i % 2 == 0) || (firstEntry != today && i % 2 == 1)) {
+							forecastObj.date = forecastArray[i].querySelector("period").getAttribute("textForecastName");
+							forecastObj.condition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
+							forecastObj.temp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
+							forecastObj.pop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
+							if (forecastObj.pop > 0) forecastObj.pop += "%";
+						} else {
+							forecastObj.nightCondition = this.convertWeatherType(forecastArray[i].querySelector("abbreviatedForecast iconCode").textContent);
+							forecastObj.nightTemp = forecastArray[i].querySelector("temperatures temperature").textContent + "\u00B0";
+							forecastObj.nightPop = forecastArray[i].querySelector("abbreviatedForecast pop").textContent;
+							if (forecastObj.nightPop > 0) forecastObj.nightPop += "%";
+							newdays.push(forecastObj);
+							forecastObj = new ForecastData();
+						}
 					}
+				} catch (error) {
+					Log.error(error);
+				}
+				if (newdays.length < 6) {
+					Log.error("Error retrieving forecast ", days.length);
+				} else {
+					days.splice(0);
+					days = newdays;
 				}
 			}
 			
