@@ -4,6 +4,10 @@
   line-height: 1;
 }
 
+.MMM-EnvCanada header {
+  font-size: 23px;
+}
+
 .MMM-EnvCanada .forecastable {
   padding-top: 5px;
   padding-left: 20px;
