@@ -3,7 +3,7 @@
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 1.3 July 2025
+ * version 2.0.0 September 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -50,7 +50,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	start() {
-		Log.log("MMM-EnvCanada starting version 1.4.");		
+		Log.log("MMM-EnvCanada starting version 2.0.0");		
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
