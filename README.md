@@ -67,7 +67,7 @@ Here's an example of a basic config for the module. See full list of available s
 This is my first MagicMirror² module. There probably are better ways to do some of the things I have implemented, but this represents what I have learned so far, with thanks to the authors of the envcanada provider code for the default weather module. I will respond to questions and suggestions as promptly as possible.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
 All notable changes to this project will be documented in the [CHANGELOG.md](CHANGELOG.md) file.
