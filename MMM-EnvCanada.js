@@ -3,7 +3,7 @@
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 2.0.0 September 2025
+ * version 2.0.1 September 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -18,14 +18,13 @@
  */
  
 var locationHeader = "";
-var	forecast = "Starting ...";
+var forecast = "Starting ...";
 var marine = "";
 var airquality = "";
 var airQI = "";
 var airQIStat = "low";
 var airQIF = "";
 var airQIFStat = "low";
-var myType = "day-sunny";
 var days = [];
 var fileSuffix = "";
 var mfileSuffix = "";
@@ -50,7 +49,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	start() {
-		Log.log("MMM-EnvCanada starting version 2.0.0");		
+		Log.log("MMM-EnvCanada starting version 2.0.1");		
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
