@@ -1,7 +1,7 @@
 # MMM-EnvCanada
 MagicMirror² Module to display weather forecast information from Environment Canada.
 
-Version 2.0.0, updated September 2025, released August 2023 Copyright © Charles Morris
+Version 2.0.1, updated September 2025, released August 2023 Copyright © Charles Morris
 
 [![Platform](https://img.shields.io/badge/platform-MagicMirror-informational)](https://MagicMirror.builders)
 ![License](https://img.shields.io/badge/license-MIT-informational)
