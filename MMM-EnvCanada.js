@@ -3,7 +3,7 @@
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 2.0.1 September 2025
+ * version 2.0.2 October 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -49,7 +49,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	start() {
-		Log.log("MMM-EnvCanada starting version 2.0.1");		
+		Log.log("MMM-EnvCanada starting version 2.0.2");		
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
@@ -135,7 +135,7 @@ Module.register("MMM-EnvCanada", {
 		const day = String(date.getDate()).padStart(2, '0');
 		let forecastURL = "https://dd.weather.gc.ca/${year}${month}${day}/";
 
-		forecastURL += WXO-DD/citypage_weather/ + this.config.provCode;
+		forecastURL += "WXO-DD/citypage_weather/" + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
 
 		forecastURL += `/${hour}/`;
