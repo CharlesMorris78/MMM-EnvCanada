@@ -129,8 +129,15 @@ Module.register("MMM-EnvCanada", {
 	},
 
 	async fetchForecastFile() {
-		let forecastURL = "https://dd.weather.gc.ca/citypage_weather/" + this.config.provCode;
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		let forecastURL = "https://dd.weather.gc.ca/${year}${month}${day}/";
+
+		forecastURL += WXO-DD/citypage_weather/ + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
+
 		forecastURL += `/${hour}/`;
 		fileSuffix = this.config.siteCode + "_" + this.config.language + ".xml";
 
