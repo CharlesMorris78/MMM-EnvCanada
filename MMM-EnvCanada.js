@@ -97,7 +97,7 @@ Module.register("MMM-EnvCanada", {
 	getForecast() {
 		this.fetchForecastFile();
 		this.fetchMarineFile();
-		this.fetchAirQuality();
+	/*	this.fetchAirQuality();
 		
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
@@ -121,7 +121,7 @@ Module.register("MMM-EnvCanada", {
 					else airQIFStat = "low";
 				this.updateDom(0);
 			});
-		}
+		} */
 	},
 	
 	getCurrentDate() {
@@ -138,7 +138,7 @@ Module.register("MMM-EnvCanada", {
 	},
 
 	async fetchForecastFile() {
-		let forecastURL = "https://dd.weather.gc.ca/" + getCurrentDate() + "/";
+		let forecastURL = "https://dd.weather.gc.ca/" + this.getCurrentDate() + "/";
 
 		forecastURL += "WXO-DD/citypage_weather/" + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
@@ -310,7 +310,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	async fetchAirQuality() {
-		let forecastURL = "https://dd.weather.gc.ca/" + getCurrentDate() + "/";
+		let forecastURL = "https://dd.weather.gc.ca/" + this.getCurrentDate() + "/";
 
 		forecastURL += "WXO-DD/air_quality/aqhi/" + this.config.provCode + "observation/realtime/xml/";
 		fileSuffix = "AQ_OBS_" + this.config.airQualityRegion;
