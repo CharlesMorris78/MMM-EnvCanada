@@ -97,6 +97,7 @@ Module.register("MMM-EnvCanada", {
 	getForecast() {
 		this.fetchForecastFile();
 		this.fetchMarineFile();
+		this.fetchAirQuality();
 		
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
@@ -123,17 +124,21 @@ Module.register("MMM-EnvCanada", {
 		}
 	},
 	
+	getCurrentDate() {
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		return year + month + day;
+	},
+
 	getCurrentHourGMT() {
 		const now = new Date();
 		return now.toISOString().substring(11, 13); // "HH" in GMT
 	},
 
 	async fetchForecastFile() {
-		const date = new Date();
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		let forecastURL = "https://dd.weather.gc.ca/${year}${month}${day}/";
+		let forecastURL = "https://dd.weather.gc.ca/" + getCurrentDate() + "/";
 
 		forecastURL += "WXO-DD/citypage_weather/" + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
@@ -304,10 +309,38 @@ Module.register("MMM-EnvCanada", {
 		});
 	},
 	
-	getAirQualityUrl() {
-		return `https://dd.weather.gc.ca/air_quality/aqhi/${this.config.airQualityProv}/observation/realtime/xml/AQ_OBS_${this.config.airQualityRegion}_CURRENT.xml`;
+	async fetchAirQuality() {
+		let forecastURL = "https://dd.weather.gc.ca/" + getCurrentDate() + "/";
+
+		forecastURL += "WXO-DD/air_quality/aqhi/" + this.config.provCode + "observation/realtime/xml/;
+		fileSuffix = "AQ_OBS_" + this.config.airQualityRegion;
+
+		// Fetch the file from the directory listing
+		const request = {};
+		requestUrl = this.getCorsUrl(forecastURL, undefined, undefined);
+		const response = await fetch(requestUrl, request);
+		const data = await response.text();
+
+		let forecastFile = '';
+		let forecastFileURL = '';
+		let nextFile = data.split(fileSuffix);
+		if (nextFile.length > 1) {
+			// Find the last occurrence
+			forecastFile = nextFile[nextFile.length - 2].slice(-16);
+			forecastFileURL = forecastURL + fileSuffix + forecastFile;
+			this.airQualityCallback(forecastFileURL);
+		}
 	},
 	
+	airQualityCallback(forecastURL) {
+		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
+		.then((data) => {
+
+			this.updateDom(0);
+		});
+	},
+
+
 	getAirQualityForecastUrl() {
 		return `https://dd.weather.gc.ca/air_quality/aqhi/${this.config.airQualityProv}/forecast/realtime/xml/AQ_FCST_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
