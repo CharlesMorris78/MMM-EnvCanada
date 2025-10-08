@@ -312,7 +312,7 @@ Module.register("MMM-EnvCanada", {
 	async fetchAirQuality() {
 		let forecastURL = "https://dd.weather.gc.ca/" + getCurrentDate() + "/";
 
-		forecastURL += "WXO-DD/air_quality/aqhi/" + this.config.provCode + "observation/realtime/xml/;
+		forecastURL += "WXO-DD/air_quality/aqhi/" + this.config.provCode + "observation/realtime/xml/";
 		fileSuffix = "AQ_OBS_" + this.config.airQualityRegion;
 
 		// Fetch the file from the directory listing
