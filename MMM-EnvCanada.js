@@ -138,9 +138,7 @@ Module.register("MMM-EnvCanada", {
 	},
 
 	async fetchForecastFile() {
-		let forecastURL = "https://dd.weather.gc.ca/" + this.getCurrentDate() + "/";
-
-		forecastURL += "WXO-DD/citypage_weather/" + this.config.provCode;
+		let forecastURL = "https://dd.weather.gc.ca/today/citypage_weather/" + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
 
 		forecastURL += `/${hour}/`;
