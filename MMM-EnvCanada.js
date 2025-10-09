@@ -3,7 +3,7 @@
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
- * version 2.0.2 October 2025
+ * version 2.0.3 October 2025
  * MIT Licensed.
  * 
  * Module displays current alert warnings and current textweather 
@@ -49,7 +49,7 @@ Module.register("MMM-EnvCanada", {
 	},
 	
 	start() {
-		Log.log("MMM-EnvCanada starting version 2.0.2");		
+		Log.log("MMM-EnvCanada starting version 2.0.3");		
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
@@ -97,7 +97,6 @@ Module.register("MMM-EnvCanada", {
 	getForecast() {
 		this.fetchForecastFile();
 		this.fetchMarineFile();
-	/*	this.fetchAirQuality();
 		
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
@@ -121,17 +120,9 @@ Module.register("MMM-EnvCanada", {
 					else airQIFStat = "low";
 				this.updateDom(0);
 			});
-		} */
+		}
 	},
 	
-	getCurrentDate() {
-		const date = new Date();
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		return year + month + day;
-	},
-
 	getCurrentHourGMT() {
 		const now = new Date();
 		return now.toISOString().substring(11, 13); // "HH" in GMT
@@ -140,7 +131,6 @@ Module.register("MMM-EnvCanada", {
 	async fetchForecastFile() {
 		let forecastURL = "https://dd.weather.gc.ca/today/citypage_weather/" + this.config.provCode;
 		const hour = this.getCurrentHourGMT();
-
 		forecastURL += `/${hour}/`;
 		fileSuffix = this.config.siteCode + "_" + this.config.language + ".xml";
 
@@ -244,7 +234,7 @@ Module.register("MMM-EnvCanada", {
 			}
 			
 			if (inPeriod) {			
-				let forecastURL = "https://dd.weather.gc.ca/marine_weather/" + this.config.marineRegion;
+				let forecastURL = "https://dd.weather.gc.ca/today/marine_weather/" + this.config.marineRegion;
 				const hour = this.getCurrentHourGMT();
 				forecastURL += `/${hour}/`;
 				mfileSuffix = this.config.marineSubRegion + "_" + this.config.language + ".xml";
@@ -307,40 +297,12 @@ Module.register("MMM-EnvCanada", {
 		});
 	},
 	
-	async fetchAirQuality() {
-		let forecastURL = "https://dd.weather.gc.ca/" + this.getCurrentDate() + "/";
-
-		forecastURL += "WXO-DD/air_quality/aqhi/" + this.config.provCode + "observation/realtime/xml/";
-		fileSuffix = "AQ_OBS_" + this.config.airQualityRegion;
-
-		// Fetch the file from the directory listing
-		const request = {};
-		requestUrl = this.getCorsUrl(forecastURL, undefined, undefined);
-		const response = await fetch(requestUrl, request);
-		const data = await response.text();
-
-		let forecastFile = '';
-		let forecastFileURL = '';
-		let nextFile = data.split(fileSuffix);
-		if (nextFile.length > 1) {
-			// Find the last occurrence
-			forecastFile = nextFile[nextFile.length - 2].slice(-16);
-			forecastFileURL = forecastURL + fileSuffix + forecastFile;
-			this.airQualityCallback(forecastFileURL);
-		}
+	getAirQualityUrl() {
+		return `https://dd.weather.gc.ca/today/air_quality/aqhi/${this.config.airQualityProv}/observation/realtime/xml/AQ_OBS_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
 	
-	airQualityCallback(forecastURL) {
-		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
-		.then((data) => {
-
-			this.updateDom(0);
-		});
-	},
-
-
 	getAirQualityForecastUrl() {
-		return `https://dd.weather.gc.ca/air_quality/aqhi/${this.config.airQualityProv}/forecast/realtime/xml/AQ_FCST_${this.config.airQualityRegion}_CURRENT.xml`;
+		return `https://dd.weather.gc.ca/today/air_quality/aqhi/${this.config.airQualityProv}/forecast/realtime/xml/AQ_FCST_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
 	
 	convertWeatherType(weatherType) {

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## \[2.0.3] - 2025-10-09
+
+### Changed
+
+Change to provide support for changed Environment Canada server file folder names. Merged a better fix than the one I was working on, and then applied it for the Marine forecast and Air Quality Index features.
+
+
+
 ## \[2.0.2] - 2025-10-08
 
 ### Changed
@@ -65,5 +73,4 @@ Added configuration option for display of Air Quality Health Index.
 ### Added
 
 Initial release of MMM-EnvCanada
-
 
