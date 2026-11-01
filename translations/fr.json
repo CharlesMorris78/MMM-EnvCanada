@@ -1,0 +1,11 @@
+{
+  "STARTING": "Chargement...",
+  "FORECAST_FOR": "Prévisions pour",
+  "MARINE_FORECAST": "Météo maritime",
+  "AIR_QUALITY_INDEX": "Cote air santé",
+  "AIR_QUALITY_FORECAST": "maximum prévu",
+  "DAY": "jour",
+  "HIGH": "max",
+  "NIGHT": "nuit",
+  "LOW": "min"
+}

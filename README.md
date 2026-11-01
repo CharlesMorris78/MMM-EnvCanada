@@ -33,7 +33,7 @@ Here's an example of a basic config for the module. See full list of available s
 			header: "Environment Canada Forecast for Picton",
 			config: {
 				siteCode: "s0000702",
-				provCode: "ON", 
+				provCode: "ON",
 				updateInterval: 10 * 60 * 1000,
 				language: "en",
 				textForecasts: 2,
@@ -50,7 +50,7 @@ Here's an example of a basic config for the module. See full list of available s
 | **Setting** | **Description**|
 | --- | --- |
 | `header` | Text for the module header. If parameter is not provided, the Environment Canada location text for the configured siteCode is used.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `Environment Canada location text for the configured siteCode`</li><li>**Possible values:** `Any text string. If set to false, no header will be displayed`</li></ul> |
-| `language` | The display language provided by Environment Canada: English (en) or French (fr).<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"en"`</li><li>**Possible values:** `"en"` or `"fr"`</li></ul> |
+| `language` | The language of the weather data and module labels: English (en) or French (fr), configured per module instance. Unsupported languages and missing translations fall back to English.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `"en"`</li><li>**Possible values:** `"en"` or `"fr"`</li></ul> |
 | `marineEndMonth` | Final month to display the Marine Forecast.<br><br> <ul><li>**Type:** `number`</li><li>**Default:** `10`</li><li>**Possible values:** 1 through 12</li></ul> |
 | `marineLocation` | Location for Marine Forecast. If language is fr (French), must be the French language version of the location.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** see [Environment Canada website](https://weather.gc.ca/marine/index_e.html)</li></ul> |
 | `marineRegion` | The region for Marine Forecast. If set to empty string (the default) no Marine Forecast is displayed. Other paramters must be correct or no Marine Forecast will be displayed.<br><br> <ul><li>**Type:** `string`</li><li>**Default:** `""`</li><li>**Possible values:** `"arctic"`, `"atlantic"`, `"great_lakes"`, `"hudson"`, `"mackenzie"`, `"pacific"`, `"prairies"`, `"st_lawrence"`</li></ul> |

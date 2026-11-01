@@ -3,32 +3,18 @@
 	<div class="marinepad">{{marine | safe}}</div>
 {% endif %}
 {% if airquality != ""  %}
-	{% if language == "f" %}
-		<div class="marinepad"><b>{{airquality}} - Cote air santé:</b> <span class="{{airQIStat}}-aqi">{{airQI}}</span> maximum prévu: <span class="{{airQIFStat}}-aqi">{{airQIF}}</span></div>
-	{% else %}
-		<div class="marinepad"><b>{{airquality}} - Air Quality Index:</b> <span class="{{airQIStat}}-aqi">{{airQI}}</span> forecast: <span class="{{airQIFStat}}-aqi">{{airQIF}}</span></div>
-	{% endif %}
+	<div class="marinepad"><b>{{airquality}} - {{labels.AIR_QUALITY_INDEX}}:</b> <span class="{{airQIStat}}-aqi">{{airQI}}</span> {{labels.AIR_QUALITY_FORECAST}}: <span class="{{airQIFStat}}-aqi">{{airQIF}}</span></div>
 {% endif %}
 {% if forecastDays > 2 %}
 	<table class="forecastable">
 		<tr>
-		{% if language == "f" %}
 			<td> </td>
-			<td><i>jour</i></td>
-			<td><i>max</i></td>
+			<td><i>{{labels.DAY}}</i></td>
+			<td><i>{{labels.HIGH}}</i></td>
 			<td> </td>
-			<td><i>nuit</i></td>
-			<td><i>min</i></td>
+			<td><i>{{labels.NIGHT}}</i></td>
+			<td><i>{{labels.LOW}}</i></td>
 			<td> </td>
-		{% else %}
-			<td> </td>
-			<td><i>day</i></td>
-			<td><i>high</i></td>
-			<td> </td>
-			<td><i>night</i></td>
-			<td><i>low</i></td>
-			<td> </td>
-		{% endif %}
 		</tr>
 		{% set forecast = forecast.slice(0, forecastDays) %}
 		{% for f in forecast %}
