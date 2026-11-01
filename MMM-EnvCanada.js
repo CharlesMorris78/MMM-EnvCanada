@@ -1,24 +1,24 @@
 /* MagicMirror²
- * Module: EnvCanada 
+ * Module: EnvCanada
  *
  * By Charles Morris
  * some material based on envcanada provider for default Weather Module
  * version 2.0.3 October 2025
  * MIT Licensed.
- * 
- * Module displays current alert warnings and current textweather 
+ *
+ * Module displays current alert warnings and current textweather
  * forecast from Environment Canada for configured location for today
  * and tonight, or for tonight and tomorrow.
- * 
+ *
  * If configured, also displays Environment Canada forecast for 5 days,
- * showing two lines for "today" and "tonight" forecasts (Weather Module only 
+ * showing two lines for "today" and "tonight" forecasts (Weather Module only
  * shows one line)
- * 
+ *
  * If configured, also displays Marine Wind forecast
  */
- 
+
 var locationHeader = "";
-var forecast = "Starting ...";
+var forecast = "";
 var marine = "";
 var airquality = "";
 var airQI = "";
@@ -28,7 +28,7 @@ var airQIFStat = "low";
 var days = [];
 var fileSuffix = "";
 var mfileSuffix = "";
- 
+
 Module.register("MMM-EnvCanada", {
 	// Default module config.
 	defaults: {
@@ -47,29 +47,48 @@ Module.register("MMM-EnvCanada", {
 		airQualityProv: "",
 		airQualityRegion: ""
 	},
-	
-	start() {
-		Log.log("MMM-EnvCanada starting version 2.0.3");		
+
+	async start() {
+		Log.log("MMM-EnvCanada starting version 2.0.3");
+		if (this.config.language != "fr") this.config.language = "en";
+		this.labels = await this.loadLabels();
+		forecast = this.labels.STARTING;
 		setInterval(() => {
 			this.getForecast();
 			}, this.config.updateInterval);
-		if (this.config.language != "fr") this.config.language = "en";
 		if (this.config.textForecasts > 6) this.config.textForecasts = 6;
 		if (this.config.showForecastDays > 6) this.config.showForecastDays = 6;
 		if (this.config.marineStartMonth < 1) this.config.marineStartMonth = 1;
 		if (this.config.marineEndMonth > 12) this.config.marineEndMonth = 12;
 		if (this.data.header) locationHeader = this.data.header;
+		this.updateDom(0);
 		this.getForecast();
 	},
-	
+
 	getStyles() {
 		return ["weather-icons.css", "MMM-EnvCanada.css"];
 	},
-	
+
 	getScripts() {
 		return ["forecastdata.js"];
 	},
-	
+
+	async loadLabels() {
+		const load = async (language) => {
+			const response = await fetch(this.file(`translations/${language}.json`));
+			if (!response.ok) throw new Error(`Translation request failed: ${response.status}`);
+			return response.json();
+		};
+		const labels = await load("en");
+		if (this.config.language === "en") return labels;
+		try {
+			return { ...labels, ...await load(this.config.language) };
+		} catch (error) {
+			Log.warn("MMM-EnvCanada: using English labels", error);
+			return labels;
+		}
+	},
+
 	getTemplate() {
 		return "MMM-EnvCanada.njk";
 	},
@@ -83,21 +102,21 @@ Module.register("MMM-EnvCanada", {
 			airQIF: airQIF,
 			airQIStat: airQIStat,
 			airQIFStat: airQIFStat,
-			language: this.config.language,
+			labels: this.labels,
 			forecastDays: this.config.showForecastDays,
 			forecast: days
 			};
 	},
-	
+
 	getHeader() {
 		return locationHeader;
 	},
 
-	
+
 	getForecast() {
 		this.fetchForecastFile();
 		this.fetchMarineFile();
-		
+
 		if (this.config.airQualityRegion != "") {
 			this.performWebRequest(this.getAirQualityUrl(), "xml", true, undefined, undefined)
 			.then((data) => {
@@ -122,7 +141,7 @@ Module.register("MMM-EnvCanada", {
 			});
 		}
 	},
-	
+
 	getCurrentHourGMT() {
 		const now = new Date();
 		return now.toISOString().substring(11, 13); // "HH" in GMT
@@ -150,7 +169,7 @@ Module.register("MMM-EnvCanada", {
 			this.forecastCallback(forecastFileURL);
 		}
 	},
-	
+
 	forecastCallback(forecastURL) {
 		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
 		.then((data) => {
@@ -159,8 +178,7 @@ Module.register("MMM-EnvCanada", {
 			} else {
 				if (locationHeader == "") {
 					locationHeader = data.querySelector("siteData location name").textContent;
-					if (this.config.language == "fr") locationHeader = "Prévisions pour " + locationHeader;
-					else locationHeader = "Forecast for " + locationHeader;
+					locationHeader = this.labels.FORECAST_FOR + " " + locationHeader;
 				}
 			}
 			var forecastArray = data.querySelectorAll("siteData forecastGroup forecast");
@@ -169,7 +187,7 @@ Module.register("MMM-EnvCanada", {
 				forecast += "<b>" + forecastArray[i].querySelector("period").getAttribute("textForecastName") + ":</b> ";
 				forecast += forecastArray[i].querySelector("textSummary").textContent + " ";
 			}
-			
+
 			if (this.config.showAlerts) {
 				var alert = data.querySelectorAll("siteData warnings event");
 				if (alert && alert.length > 0) {
@@ -180,13 +198,10 @@ Module.register("MMM-EnvCanada", {
 					}
 				}
 			}
-			
+
 			if (this.config.showForecastDays > 2) {
 				var firstEntry = forecastArray[0].querySelector("period").getAttribute("textForecastName");
-				var today = "Today";
-				if (this.config.language === "fr") {
-					today = "Aujourd'hui";
-				}
+				var today = this.config.language === "fr" ? "Aujourd'hui" : "Today";
 				var forecastObj = new ForecastData();
 				var newdays = [];
 				forecastObj.date = today;
@@ -217,11 +232,11 @@ Module.register("MMM-EnvCanada", {
 					days = newdays;
 				}
 			}
-			
+
 			this.updateDom(0);
 		});
 	},
-	
+
 	async fetchMarineFile() {
 		if (this.config.marineRegion != "") {
 			const date = new Date();
@@ -232,8 +247,8 @@ Module.register("MMM-EnvCanada", {
 			} else {
 				if (month < this.config.marineStartMonth && month > this.config.marineEndMonth) inPeriod = false;
 			}
-			
-			if (inPeriod) {			
+
+			if (inPeriod) {
 				let forecastURL = "https://dd.weather.gc.ca/today/marine_weather/" + this.config.marineRegion;
 				const hour = this.getCurrentHourGMT();
 				forecastURL += `/${hour}/`;
@@ -257,7 +272,7 @@ Module.register("MMM-EnvCanada", {
 			}
 		}
 	},
-	
+
 	marineCallback(forecastURL) {
 		this.performWebRequest(forecastURL, "xml", true, undefined, undefined)
 		.then((data) => {
@@ -277,7 +292,7 @@ Module.register("MMM-EnvCanada", {
 					}
 				}
 			}
-			
+
 			var marineArray = data.querySelectorAll("marineData regularForecast location");
 			if (marineArray && marineArray.length > 0) {
 				for (let i = 0; i < marineArray.length; i += 1) {
@@ -290,21 +305,20 @@ Module.register("MMM-EnvCanada", {
 			}
 
 			if (marine != "") {
-				if (this.config.language === "fr") marine = "<b>Météo maritime:</b> " + marine;
-				else marine = "<b>Marine Forecast:</b> " + marine;
+				marine = "<b>" + this.labels.MARINE_FORECAST + ":</b> " + marine;
 				this.updateDom(0);
 			}
 		});
 	},
-	
+
 	getAirQualityUrl() {
 		return `https://dd.weather.gc.ca/today/air_quality/aqhi/${this.config.airQualityProv}/observation/realtime/xml/AQ_OBS_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
-	
+
 	getAirQualityForecastUrl() {
 		return `https://dd.weather.gc.ca/today/air_quality/aqhi/${this.config.airQualityProv}/forecast/realtime/xml/AQ_FCST_${this.config.airQualityRegion}_CURRENT.xml`;
 	},
-	
+
 	convertWeatherType(weatherType) {
 		const weatherTypes = {
 			"00": "day-sunny",
@@ -360,7 +374,7 @@ Module.register("MMM-EnvCanada", {
 
 		return weatherTypes.hasOwnProperty(weatherType) ? weatherTypes[weatherType] : null;
 	},
-	
+
 	async performWebRequest(url, type = "json", useCorsProxy = false, requestHeaders = undefined, expectedResponseHeaders = undefined) {
 		const request = {};
 		let requestUrl;
